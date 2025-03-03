@@ -6,7 +6,7 @@ Repository for ED5125 project (Spr'25). This project is based on Northwestern's 
 ## Overview
 1. This repository contains code to simulate a pick-and-place task using a Kuka youBot mobile manipulator (a mobile base with four mecanum wheels and a 5R robot arm) in CoppeliaSim. 
 2. Static Obstacles include wall and primitive shapes
-3. 
+3. Feedback Controller
 4. Motion planning 
 
 ## Package Description
