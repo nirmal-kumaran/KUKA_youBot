@@ -9,8 +9,7 @@ ED5125 திட்டத்திற்கான களஞ்சியம் (S
 3. கருத்துக் கட்டுப்பாட்டாளர்
 4. இயக்க திட்டமிடல்
 
-<EN>
-# Kuka youBot Mobile Manipulation
+# Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
 
 Repository for ED5125 project (Spr'25). This project is based on Northwestern's ME 449 capstone project. Credits to them. Full project description can be found [here](https://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone_2023).
