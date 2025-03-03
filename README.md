@@ -27,3 +27,6 @@ This project is packaged into 3 Python modules (milestones): <br>
 2. `trajectory_generator.py` - Milestone 2 code. The function `TrajectoryGenerator()` generates the reference trajectory for the robot's end effector.<br>
 3. `feedback_control.py` - Milestone 3 code. The function `FeedbackControl()` uses kinematic task-space feedforward plus feedback control to continuously reduce deviations from the reference trajectory.<br>
 4. `mobile_manipulation.py` - Full Program Implementation. Uses the functions defined in the 3 milestone modules to generate the robot trajectory.
+
+## Setup
+1. run this command to install zmq api - `pip install coppeliasim-zmqremoteapi-client`
