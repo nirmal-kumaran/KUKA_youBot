@@ -14,7 +14,7 @@ ED5125(Spr'25) திட்டத்திற்கான களஞ்சிய�
 
 ## அமைப்பு 
 1. உங்கள் VENV இல் ZMQ API ஐ நிறுவ இந்த கட்டளையை இயக்கவும்- 'pip install coppeliasim-zmqremoteapi-client'
-2. 2. simulation_manager.py இயக்கவும்
+2. simulation_manager.py இயக்கவும்
 
 # Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
