@@ -12,7 +12,7 @@ ED5125(Spr'25) திட்டத்திற்கான களஞ்சிய�
 # Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
 
-Repository for ED5125 project (Spr'25). This project is based on Northwestern's ME 449 capstone project. Credits to them. Full project description can be found [here](https://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone_2023).
+Repository for ED5125 project (Spr'25). This project is based on Kuka YouBot mobile Manipultor performing motion planning.
 
 ## Overview
 1. This repository contains code to simulate a pick-and-place task using a Kuka youBot mobile manipulator (a mobile base with four mecanum wheels and a 5R robot arm) in CoppeliaSim. 
@@ -29,5 +29,7 @@ This project is packaged into occupancy_grid, base_planner, manipulator_planner,
 2. run simulation_manager.py
 
 ## Results
+
 1. A* path of base with Euclidean heuristic
-![Screenshot_20250305_150430](https://github.com/user-attachments/assets/e12c7fef-19d2-4e64-b091-16049ec0f823)
+<img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
+
