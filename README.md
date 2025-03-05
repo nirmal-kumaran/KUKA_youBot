@@ -13,8 +13,13 @@ ED5125(Spr'25) திட்டத்திற்கான களஞ்சிய�
 இந்த திட்டம் occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager என தொகுக்கப்பட்டுள்ளது: 
 
 ## அமைப்பு 
-1. உங்கள் VENV இல் ZMQ API ஐ நிறுவ இந்த கட்டளையை இயக்கவும்- 'pip install coppeliasim-zmqremoteapi-client'
+1. உங்கள் VENV இல் ZMQ API ஐ நிறுவ இந்த கட்டளையை இயக்கவும்- `pip install coppeliasim-zmqremoteapi-client`
 2. simulation_manager.py இயக்கவும்
+
+## முடிவுகள்
+1. யூக்ளிடிய ஹியூரிஸ்டிக் உடன் தளத்தின் ஒரு A* பாதை
+<img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
+
 
 # Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
@@ -35,7 +40,6 @@ This project is packaged into occupancy_grid, base_planner, manipulator_planner,
 2. run simulation_manager.py
 
 ## Results
-
 1. A* path of base with Euclidean heuristic
 <img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
 
