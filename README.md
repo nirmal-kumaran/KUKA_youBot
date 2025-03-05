@@ -16,13 +16,18 @@ Repository for ED5125 project (Spr'25). This project is based on Northwestern's 
 
 ## Overview
 1. This repository contains code to simulate a pick-and-place task using a Kuka youBot mobile manipulator (a mobile base with four mecanum wheels and a 5R robot arm) in CoppeliaSim. 
-2. Static Obstacles include wall and primitive shapes
+2. Static Obstacles with wall and primitive shapes
 3. Feedback Controller
 4. Motion planning 
 
 ## Package Description
-This project is packaged into  ... Python modules (milestones): <br>
+This project is packaged into occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager Python modules (milestones): <br>
 
 
 ## Setup
-1. run this command to install zmq api - `pip install coppeliasim-zmqremoteapi-client`
+1. run this command to install zmq api in your venv- `pip install coppeliasim-zmqremoteapi-client`
+2. run simulation_manager.py
+
+## Results
+1. A* path of base with Euclidean heuristic
+![Screenshot_20250305_150430](https://github.com/user-attachments/assets/e12c7fef-19d2-4e64-b091-16049ec0f823)
