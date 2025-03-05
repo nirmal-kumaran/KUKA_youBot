@@ -10,7 +10,7 @@ ED5125(Spr'25) திட்டத்திற்கான களஞ்சிய�
 4. இயக்க திட்டமிடல்
 
 ## தொகுப்பு விளக்கம் 
-இந்த திட்டம் occupancy_grid, base_planner, manipulator_planner, கட்டுப்படுத்தி simulation_manager பைதான் தொகுதிகள் (மைல்கற்கள்) என தொகுக்கப்பட்டுள்ளது: 
+இந்த திட்டம் occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager என தொகுக்கப்பட்டுள்ளது: 
 
 ## அமைப்பு 
 1. உங்கள் VENV இல் ZMQ API ஐ நிறுவ இந்த கட்டளையை இயக்கவும்- 'pip install coppeliasim-zmqremoteapi-client'
@@ -28,7 +28,7 @@ Repository for ED5125 project (Spr'25). This project is based on Kuka YouBot mob
 4. Motion planning 
 
 ## Package Description
-This project is packaged into occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager Python modules (milestones): <br>
+This project is packaged into occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager
 
 ## Setup
 1. run this command to install zmq api in your venv- `pip install coppeliasim-zmqremoteapi-client`
