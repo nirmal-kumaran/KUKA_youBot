@@ -20,6 +20,9 @@ ED5125(Spr'25) திட்டத்திற்கான களஞ்சிய�
 1. யூக்ளிடிய ஹியூரிஸ்டிக் உடன் தளத்தின் ஒரு A* பாதை
 <img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
 
+<img src="https://github.com/user-attachments/assets/08be98e5-804d-4bc2-8a96-945d76604ccd" alt="Alt Text" style="width:50%; height:auto;">
+
+
 
 # Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
@@ -43,4 +46,5 @@ This project is packaged into occupancy_grid, base_planner, manipulator_planner,
 1. A* path of base with Euclidean heuristic
 <img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
 
-<img src="https://github.com/user-attachments/assets/2941d3c9-d5c3-40b0-a9a8-8f091075d40a" alt="Alt Text" style="width:50%; height:auto;">
+<img src="https://github.com/user-attachments/assets/08be98e5-804d-4bc2-8a96-945d76604ccd" alt="Alt Text" style="width:50%; height:auto;">
+
