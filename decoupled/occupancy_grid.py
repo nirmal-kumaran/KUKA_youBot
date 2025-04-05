@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 class OccupancyGrid:
     def __init__(self, sim, cell_size=0.5):
+
         self.sim = sim
         self.cell_size = cell_size
         self.grid = None
@@ -20,6 +21,7 @@ class OccupancyGrid:
         max_x = self.sim.getObjectFloatParam(floor_handle, self.sim.objfloatparam_objbbox_max_x)
         min_y = self.sim.getObjectFloatParam(floor_handle, self.sim.objfloatparam_objbbox_min_y)
         max_y = self.sim.getObjectFloatParam(floor_handle, self.sim.objfloatparam_objbbox_max_y)
+        print(f"FLoor_Dimenions: min_x {min_x}, max_x{max_x}, min_y {min_y}, max_y {max_y}")
         return min_x, max_x, min_y, max_y
 
     def _get_obstacles(self):

@@ -24,7 +24,7 @@ class SimulationManager:
             start = occupancy_grid.start_position
             payload = occupancy_grid.payload_position
             goal = occupancy_grid.goal_position
-
+            
             astar = AStar(maze, occupancy_grid.map_dims, occupancy_grid.cell_size, heuristic=1)
             start_payload_theta, start_payload = astar.astar_trajectory(start, payload)
             payload_goal_theta, payload_goal = astar.astar_trajectory(payload, goal)

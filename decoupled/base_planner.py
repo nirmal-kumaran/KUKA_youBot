@@ -57,7 +57,9 @@ class AStar:
         
         # Handle last waypoint (same theta as previous or task-defined)
         base_waypoints.append((astar_path[-1][0], astar_path[-1][1], base_waypoints[-1][2]))
-        
+        print(f"Start Position - x:{base_waypoints[0][0]}, y:{base_waypoints[0][1]}, theta{base_waypoints[0][2]}")
+        print(f"Goal Position - x:{base_waypoints[-1][0]}, y:{base_waypoints[-1][1]}, theta{base_waypoints[-1][2]}")
+       
         return base_waypoints
 
     def astar(self, start, goal):
