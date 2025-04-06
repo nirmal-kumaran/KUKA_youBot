@@ -51,18 +51,16 @@ class YouBotController:
         """Get current robot position and yaw using quaternion for accurate heading."""
         position = self.sim.getObjectPosition(self.youbot_handle, -1)
         angles = self.sim.getObjectOrientation(self.youbot_handle, -1)
-        # yaw = angles[2]
-        quaternion = self.sim.getObjectQuaternion(self.youbot_handle, -1)
-        x, y, z, w = quaternion
+        yaw = angles[2]
+        # quaternion = self.sim.getObjectQuaternion(self.youbot_handle, -1)
+        # x, y, z, w = quaternion
         
-        quat = [x, y, z, w]
+        # quat = [x, y, z, w]
 
-        # Convert to Euler angles in XYZ order (roll, pitch, yaw)
-        eul_xyz = R.from_quat(quat).as_euler('xyz', degrees=False)
+        # # Convert to Euler angles in XYZ order (roll, pitch, yaw)
+        # eul_xyz = R.from_quat(quat).as_euler('xyz', degrees=False)
 
-        yaw = eul_xyz[2]
-        print(yaw)
-        
+        # yaw = eul_xyz[2]        
         return [position[0], position[1], yaw]
     
     def compute_wheel_velocities(self, vx, vy, omega):
@@ -158,9 +156,9 @@ class YouBotController:
 
     def follow_path(self, path, pos_threshold=0.05, orient_threshold=0.1):
 
-        path = path[1:]
+        # path = path[1:]
 
-        path = [(2.25011, -1.17, 1.5707)]
+        path = [(1.25011, -2.17, 1.5707)]
         # print("robot_stopped")
         # self.stop()
 
@@ -177,10 +175,10 @@ class YouBotController:
             while not waypoint_reached: # and (time.time() - start_time) < timeout
 
                 self.gtg(waypoint)
-                print(waypoint_reached)
 
                 if self.at_goal(waypoint):
                     waypoint_reached = True
+                    self.stop()
                     print(f"Waypoint {i+1} reached!")
 
         print("Path following complete!")
@@ -219,6 +217,7 @@ class YouBotController:
             flag_orientation_threshold = True
             
         if flag_dist_thershold and flag_orientation_threshold:
+            
             return True
         else:
             return False
@@ -227,27 +226,32 @@ class YouBotController:
         #The Go to goal controller
         # print(f"Goal_poosition - {goal_state[0]}, {goal_state[1]}, {goal_state[2]}")
         robot_state = self.get_robot_pose()
+        print(f"Robot - {robot_state}")
+        print(f"Goal - {goal_state}")
 
-        print(f"Current_Actual_poosition - {robot_state[0]}, {robot_state[1]}, {robot_state[2]}")
-        print(f"Moving to waypoint {goal_state[0]}, y {goal_state[1]}, theta {goal_state[2]}")
+        # print(f"Current_Actual_poosition - {robot_state[0]}, {robot_state[1]}, {robot_state[2]}")
+        # print(f"Moving to waypoint {goal_state[0]}, y {goal_state[1]}, theta {goal_state[2]}")
         
 
         #check distance to goal point 
         d = np.sqrt(((goal_state[0] - robot_state[0])**2) + ((goal_state[1] - robot_state[1])**2))
-        print(d)
-        
+        print(f"Error Distance {d}")
+
+        c = 200
         if d > self.goal_dist_threshold:
             #Only linear motion
             Wa = 0.0
 
+            
+
             #Get actuation in global frame
             if np.abs(goal_state[0] - robot_state[0]) > (self.goal_dist_threshold/2.0):
-                Vx = np.copysign(self.youbot_max_V, goal_state[0] - robot_state[0])
+                Vx = c * np.copysign(self.youbot_max_V, (goal_state[0] - robot_state[0]))
             else:
                 Vx = 0.0
             
             if np.abs(goal_state[1] - robot_state[1]) > (self.goal_dist_threshold/2.0):
-                Vy = np.copysign(self.youbot_max_V, goal_state[1] - robot_state[1])
+                Vy = c * -np.copysign(self.youbot_max_V, c * (goal_state[1] - robot_state[1]))
             else:
                 Vy = 0.0                
             
@@ -262,6 +266,7 @@ class YouBotController:
             
             return
         else:
+            print("stage2")
             #check orientation diff 
             delta_theta = goal_state[2] - robot_state[2]
             #restrict angle to (-pi,pi)
@@ -271,16 +276,20 @@ class YouBotController:
                 #Only angular motion 
                 Vx = 0.0
                 Vy = 0.0 
-                Wa = np.copysign(self.youbot_max_W, delta_theta)
+                Wa = c * np.copysign(self.youbot_max_W, delta_theta)
+
+                print(f"Angular Velocity {Wa}")
                 
                 #request robot to execute velocity
-                self.compute_wheel_velocities(Vx, Vy, Wa)
+                wheel_vel = [Vx, Vy, Wa]
+                self.set_wheel_velocities(wheel_vel)
                 
                 return
             
             else:
                 #request robot to stop
-                self.compute_wheel_velocities(0.0, 0.0, 0.0)
+                wheel_vel = [Vx, Vy, Wa]
+                self.set_wheel_velocities(wheel_vel)
                 
                 return
     

@@ -1,5 +1,6 @@
 import numpy as np
 from queue import PriorityQueue
+import math
 
 
 class AStar:
@@ -50,8 +51,8 @@ class AStar:
             delta_y = y_next - y_current
             
             # Calculate theta using atan2
-            theta = np.arctan2(delta_y, delta_x)
-            
+            angle_rad = np.arctan2(delta_y, delta_x)
+            theta = (angle_rad + math.pi) % (2 * math.pi) - math.pi
             # Append current waypoint with theta
             base_waypoints.append((x_current, y_current, theta))
         

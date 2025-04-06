@@ -48,22 +48,47 @@ class YouBotController:
         self.goal_orientation_threshold = 0.1 #[rad] The threshold orientation at which robot is declared to be at goal 
             
     def get_robot_pose(self):
-        """Get current robot position and yaw using quaternion for accurate heading."""
+        """
+        Get current robot position and orientation using custom quaternion conversion
+        to avoid gimbal lock issues.
+        """
         position = self.sim.getObjectPosition(self.youbot_handle, -1)
-        angles = self.sim.getObjectOrientation(self.youbot_handle, -1)
-        # yaw = angles[2]
-        quaternion = self.sim.getObjectQuaternion(self.youbot_handle, -1)
-        x, y, z, w = quaternion
+        orientation = self.sim.getObjectQuaternion(self.youbot_handle, -1)
         
-        quat = [x, y, z, w]
-
-        # Convert to Euler angles in XYZ order (roll, pitch, yaw)
-        eul_xyz = R.from_quat(quat).as_euler('xyz', degrees=False)
-
-        yaw = eul_xyz[2]
-        print(yaw)
+        print(orientation)
+        yaw_new = 0.0
+        # roll, yaw, pitch  = orientation
         
-        return [position[0], position[1], yaw]
+        # # Convert to quaternion using the standard formula
+        # cy = np.cos(yaw * 0.5)
+        # sy = np.sin(yaw * 0.5)
+        # cp = np.cos(pitch * 0.5)
+        # sp = np.sin(pitch * 0.5)
+        # cr = np.cos(roll * 0.5)
+        # sr = np.sin(roll * 0.5)
+        
+        # # Quaternion components (w, x, y, z)
+        # w = cr * cp * cy + sr * sp * sy
+        # x = sr * cp * cy - cr * sp * sy
+        # y = cr * sp * cy + sr * cp * sy
+        # z = cr * cp * sy - sr * sp * cy
+        
+        # # Convert back to Euler angles (yaw-pitch-roll sequence)
+        # # This helps avoid gimbal lock by using quaternion intermediate representation
+        # sinr_cosp = 2 * (w * x + y * z)
+        # cosr_cosp = 1 - 2 * (x * x + y * y)
+        # roll_new = np.arctan2(sinr_cosp, cosr_cosp)
+        
+        # sinp = 2 * (w * y - z * x)
+        # pitch_new = np.arcsin(sinp)
+        
+        # siny_cosp = 2 * (w * z + x * y)
+        # cosy_cosp = 1 - 2 * (y * y + z * z)
+        # yaw_new = np.arctan2(siny_cosp, cosy_cosp)
+        
+        # print(f"This is {yaw_new}")
+        # Return position and the yaw (heading angle)
+        return [position[0], position[1], yaw_new]
     
     def compute_wheel_velocities(self, vx, vy, omega):
         """Correctly convert chassis velocities to wheel velocities for YouBot."""
@@ -158,16 +183,16 @@ class YouBotController:
 
     def follow_path(self, path, pos_threshold=0.05, orient_threshold=0.1):
 
-        path = path[1:]
+        # path = path[1:]
 
-        path = [(2.25011, -1.17, 1.5707)]
+        path = [(2.25011, -1.17, 1.1207)]
         # print("robot_stopped")
         # self.stop()
 
         for i, waypoint in enumerate(path):
             target_x, target_y, target_theta = waypoint
 
-
+            # print(target_theta)
             print(f"Moving to waypoint {i+1}/{len(path)}: [{target_x:.2f}, {target_y:.2f}, {target_theta:.2f}]")
             
             waypoint_reached = False

@@ -2,7 +2,7 @@ from coppeliasim_zmqremoteapi_client import RemoteAPIClient
 from occupancy_grid import OccupancyGrid
 from base_planner import AStar
 from manipulator_planner import InformedRRTStar
-from controller import YouBotController
+from controller_test import YouBotController
 import numpy as np
 from scipy.interpolate import BSpline
 
