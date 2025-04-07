@@ -3,8 +3,11 @@ from occupancy_grid import OccupancyGrid
 from base_planner import AStar
 # from manipulator_planner import RRT
 # from controller import YouBotController
-from manipulator_planner2 import RRT 
+# from manipulator_planner2 import RRT 
+from manipulator_planner3 import RRT, RRTStar
 import numpy as np
+import matplotlib.pyplot as plt
+import time
 # from scipy.interpolate import BSpline
 
 class SimulationManager:
@@ -73,8 +76,8 @@ class SimulationManager:
             payload = occupancy_grid.payload_position
             goal = occupancy_grid.goal_position
 
-            base_planner = AStar(maze, occupancy_grid.map_dims, occupancy_grid.cell_size, heuristic=1)
             print("Planning base path")
+            base_planner = AStar(maze, occupancy_grid.map_dims, occupancy_grid.cell_size, heuristic=1)
             start_payload_theta, start_payload = base_planner.astar_trajectory(start, payload)
             payload_goal_theta, payload_goal = base_planner.astar_trajectory(payload, goal)
             if start_payload_theta and payload_goal_theta:
@@ -84,31 +87,27 @@ class SimulationManager:
 
             ### Manipulator Planner
             if start_payload_theta:
-                # Get standoff waypoint (second-to-last in path)
-                standoff_waypoint = np.array(start_payload_theta[-2][:2])  # Extract (x, y)
+                standoff_waypoint = np.array(start_payload_theta[-2][:2])
                 print("Standoff waypoint:", standoff_waypoint)
 
-                # Get payload position
                 cube_payload_handle = self.sim.getObject('/Cuboid_initial')
-                payload_position = np.array(self.sim.getObjectPosition(cube_payload_handle, -1)[:2])  # Extract (x, y)
+                payload_position = np.array(self.sim.getObjectPosition(cube_payload_handle, -1)[:2])
                 print("Payload position:", payload_position)
 
-                # Generate 10 evenly spaced points along the line (z remains constant)
                 num_points = 10
-                z_value = 0.0963  # Base height (constant z)
+                z_value = 0.0963  
                 points = [
                     np.append(standoff_waypoint + t * (payload_position - standoff_waypoint), z_value)
                     for t in np.linspace(0, 1, num_points)
                 ]
                 print(f"Generated {len(points)} points along the line.")
 
-                # Initialize manipulator planner
-                manipulator_planner = RRT(self.sim)
+                print("Planning manipulator path")
+                manipulator_planner = RRTStar(self.sim)
                 current_arm_config = self.get_current_arm_config()
 
-                # Define target pose matrices
                 Tsc_i = np.eye(4)
-                Tsc_i[:3, 3] = self.sim.getObjectPosition(cube_payload_handle, -1)  # Full [x, y, z]
+                Tsc_i[:3, 3] = self.sim.getObjectPosition(cube_payload_handle, -1)
 
                 Tce_s = np.array([
                     [np.cos(3*np.pi/4), 0, np.sin(3*np.pi/4), 0],
@@ -123,7 +122,6 @@ class SimulationManager:
                 # print(Tce_s)
                 # print(waypoint1)
 
-                # Iterate through generated points to find a feasible IK solution
                 for i, point in enumerate(points):
                     print(f"Testing point {i+1}/{len(points)}: {point}")
 
@@ -143,20 +141,24 @@ class SimulationManager:
                         print(f"✅ Feasible IK solution found at point {point} with orientation {theta:.2f} radians.")
 
                         # Plan arm trajectory to the feasible configuration
+                        start_time = time.time()
                         path = manipulator_planner.planning(current_arm_config, goal_config)
+                        elapsed_time = time.time() - start_time
                         if path:
                             ee_positions = manipulator_planner.get_ee_positions(path)
                             self.visualize_manipulatorpath_in_sim(ee_positions)
-                            print(f"Successfully planned trajectory with {len(path)}, {path} waypoints.")
+                            print(f"Successfully planned trajectory with {len(path)} points, {elapsed_time} sec.")
                             
                             # Run timing tests with ACTUAL configurations
                             self.run_timing_tests(
                                 manipulator_planner,
-                                start_config=current_arm_config,
-                                goal_config=goal_config
+                                start_config=[0.00, 0.64, 0.99, 1.32, 0.00],
+                                goal_config=[0.14, -1.56, 0.50, -2.87, 3.14]
                             )
                             break
-
+                        else:
+                            print("Arm path planning failed.")
+                            break
                     if i == len(points) - 1:
                         print("❌ No feasible IK solution found along the line.")
             # if start_payload_theta:
@@ -380,7 +382,7 @@ class SimulationManager:
 
         # Track all handles for cleanup
         self.manipulator_drawing_handles.extend([points_handle, lines_handle, start_handle, end_handle])
-        print(f"Visualized manipulator path with {len(ee_positions)} points")
+        # print(f"Visualized manipulator path with {len(ee_positions)} points")
 
     def run_timing_tests(self, manipulator_planner, start_config, goal_config):
         """
@@ -407,7 +409,6 @@ class SimulationManager:
 
     def visualize_timing_results(self, results):
         """Visualize timing results with success/failure info and path length."""
-        import matplotlib.pyplot as plt
         
         iterations = list(results.keys())
         times = [v['time'] for v in results.values()]
