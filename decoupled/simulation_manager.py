@@ -82,32 +82,48 @@ class SimulationManager:
             payload_goal_theta, payload_goal = base_planner.astar_trajectory(payload, goal)
             if start_payload_theta and payload_goal_theta:
                 base_path_theta, base_path = start_payload_theta + payload_goal_theta[1:], start_payload + payload_goal[1:]
-                # occupancy_grid.visualize(path=base_path)
+                occupancy_grid.visualize(path=base_path)
                 self.visualize_basepath_in_sim(base_path_theta)
 
             ### Manipulator Planner
             if start_payload_theta:
-                standoff_waypoint = np.array(start_payload_theta[-2][:2])
+                standoff_waypoint = np.array(start_payload_theta[-2])
                 print("Standoff waypoint:", standoff_waypoint)
 
                 cube_payload_handle = self.sim.getObject('/Cuboid_initial')
-                payload_position = np.array(self.sim.getObjectPosition(cube_payload_handle, -1)[:2])
-                print("Payload position:", payload_position)
+                cube_payload_position = np.array(self.sim.getObjectPosition(cube_payload_handle, -1))
+                cube_payload_orientation = self.sim.getObjectOrientation(cube_payload_handle, -1)
+                R = self.euler_to_rotation_matrix(cube_payload_orientation)
+
+
+                print("Payload position:", cube_payload_position)
 
                 num_points = 10
                 z_value = 0.0963  
                 points = [
-                    np.append(standoff_waypoint + t * (payload_position - standoff_waypoint), z_value)
+                    np.append(standoff_waypoint[:2] + t * (cube_payload_position[:2] - standoff_waypoint[:2]), z_value)
                     for t in np.linspace(0, 1, num_points)
                 ]
                 print(f"Generated {len(points)} points along the line.")
 
                 print("Planning manipulator path")
-                manipulator_planner = RRTStar(self.sim)
+                manipulator_planner = RRT(self.sim)
                 current_arm_config = self.get_current_arm_config()
 
+                # R = np.array([
+                #     [1, 0, 0],
+                #     [0, 1, 0],
+                #     [0, 0, 1],
+                # ])
                 Tsc_i = np.eye(4)
-                Tsc_i[:3, 3] = self.sim.getObjectPosition(cube_payload_handle, -1)
+                Tsc_i[:3, :3] = R  # Set rotation part
+                Tsc_i[:3, 3] = cube_payload_position  # Set position part
+                # Tsc_i = np.array([
+                #     [1, 0, 0, payload_position[0]],
+                #     [0, 1, 0, payload_position[1]],
+                #     [0, 0, 1, z_value],
+                #     [0, 0, 0, 1]
+                # ])
 
                 Tce_s = np.array([
                     [np.cos(3*np.pi/4), 0, np.sin(3*np.pi/4), 0],
@@ -126,7 +142,7 @@ class SimulationManager:
                     print(f"Testing point {i+1}/{len(points)}: {point}")
 
                     # Compute orientation facing the payload
-                    dx, dy = payload_position[0] - point[0], payload_position[1] - point[1]
+                    dx, dy = cube_payload_position[0] - point[0], cube_payload_position[1] - point[1]
                     theta = np.arctan2(dy, dx)
 
                     # Try IK with current base position
@@ -147,7 +163,7 @@ class SimulationManager:
                         if path:
                             ee_positions = manipulator_planner.get_ee_positions(path)
                             self.visualize_manipulatorpath_in_sim(ee_positions)
-                            print(f"Successfully planned trajectory with {len(path)} points, {elapsed_time} sec.")
+                            print(f"Successfully planned trajectory with {path} points, {elapsed_time} sec.")
                             
                             # Run timing tests with ACTUAL configurations
                             self.run_timing_tests(
@@ -382,7 +398,89 @@ class SimulationManager:
 
         # Track all handles for cleanup
         self.manipulator_drawing_handles.extend([points_handle, lines_handle, start_handle, end_handle])
-        # print(f"Visualized manipulator path with {len(ee_positions)} points")
+        print(f"Visualized manipulator path with {len(ee_positions)} points")
+
+    # def visualize_manipulatorpath_in_sim(self, ee_poses):
+    #     """Visualize manipulator path with end-effector positions and orientations"""
+    #     # Clear previous drawings
+    #     for handle in self.manipulator_drawing_handles:
+    #         self.sim.removeDrawingObject(handle)
+    #     self.manipulator_drawing_handles = []
+
+    #     # Create drawing objects for path
+    #     points_handle = self.sim.addDrawingObject(
+    #         self.sim.drawing_points, 8, 0, -1, len(ee_poses), [0, 0, 1]
+    #     )
+    #     lines_handle = self.sim.addDrawingObject(
+    #         self.sim.drawing_lines, 4, 0, -1, len(ee_poses)-1, [1, 0, 1]
+    #     )
+        
+    #     # Special markers for start/end
+    #     start_handle = self.sim.addDrawingObject(
+    #         self.sim.drawing_points, 16, 0, -1, 1, [0, 1, 0]
+    #     )
+    #     end_handle = self.sim.addDrawingObject(
+    #         self.sim.drawing_points, 16, 0, -1, 1, [1, 0, 0]
+    #     )
+
+    #     # Create single objects for orientation axes
+    #     x_axis_handle = self.sim.addDrawingObject(
+    #         self.sim.drawing_lines, 4, 0, -1, len(ee_poses), [1, 0, 0]
+    #     )
+        
+    #     # Create a more prominent forward direction vector (Z-axis for typical grippers)
+    #     forward_handle = self.sim.addDrawingObject(
+    #         self.sim.drawing_lines, 6, 0, -1, len(ee_poses), [0, 0, 1]
+    #     )
+        
+    #     # Add path points and orientation vectors
+    #     prev_pos = None
+    #     for i, pose in enumerate(ee_poses):
+    #         # Convert pose to NumPy array if it's not already
+    #         if not isinstance(pose, np.ndarray):
+    #             pose = np.array(pose)
+                
+    #         pos = pose[:3, 3].flatten() if pose.ndim > 1 else pose[:3]
+    #         pos_list = pos.tolist() if isinstance(pos, np.ndarray) else list(pos)
+            
+    #         # Add position point
+    #         self.sim.addDrawingObjectItem(points_handle, pos_list)
+            
+    #         # Add line connecting to previous point
+    #         if prev_pos:
+    #             self.sim.addDrawingObjectItem(lines_handle, prev_pos + pos_list)
+    #         prev_pos = pos_list
+            
+    #         # Add orientation vectors (if pose contains rotation matrix)
+    #         if pose.ndim > 1 and pose.shape[0] >= 3 and pose.shape[1] >= 3:
+    #             # Forward direction (Z-axis for standard gripper orientation)
+    #             forward_dir = pose[:3, 2]  # Z-axis column of rotation matrix
+    #             forward_end = pos + forward_dir * 0.08  # Make forward vector longer
+    #             self.sim.addDrawingObjectItem(
+    #                 forward_handle, 
+    #                 pos_list + forward_end.tolist()
+    #             )
+                
+    #             # X-axis (typically points to the right of gripper)
+    #             x_dir = pose[:3, 0]  # X-axis column
+    #             x_end = pos + x_dir * 0.08
+    #             self.sim.addDrawingObjectItem(
+    #                 x_axis_handle,
+    #                 pos_list + x_end.tolist()
+    #             )
+
+    #     # Add start/end markers
+    #     if len(ee_poses) > 0:
+    #         start_pos = ee_poses[0][:3, 3].flatten() if isinstance(ee_poses[0], np.ndarray) and ee_poses[0].ndim > 1 else ee_poses[0][:3]
+    #         end_pos = ee_poses[-1][:3, 3].flatten() if isinstance(ee_poses[-1], np.ndarray) and ee_poses[-1].ndim > 1 else ee_poses[-1][:3]
+            
+    #         self.sim.addDrawingObjectItem(start_handle, start_pos.tolist() if isinstance(start_pos, np.ndarray) else list(start_pos))
+    #         self.sim.addDrawingObjectItem(end_handle, end_pos.tolist() if isinstance(end_pos, np.ndarray) else list(end_pos))
+
+    #     # Track all drawing objects
+    #     self.manipulator_drawing_handles = [points_handle, lines_handle, start_handle, end_handle, x_axis_handle, forward_handle]
+    #     print(f"Visualized path with {len(ee_poses)} points including orientation vectors")
+
 
     def run_timing_tests(self, manipulator_planner, start_config, goal_config):
         """

@@ -51,7 +51,7 @@ class PlannerManipulator:
         
         for max_iter in iterations_list:
             self.max_iter = max_iter
-            self.goal_sample_rate = 2
+            self.goal_sample_rate = 15
             
             _ = self.planning(start_config, goal_config)
             
@@ -144,7 +144,7 @@ class PlannerManipulator:
         joint_angles, success = mr.IKinBody(
             B_list_arm, M, T_target_base,
             initial_guess,
-            eomg=0.1, ev=0.05
+            eomg=0.01, ev=0.05
         )
         if success:
             joint_angles = self.normalize_joint_angles(joint_angles)
@@ -172,6 +172,24 @@ class PlannerManipulator:
         T_ee_world = T_base_world @ T_ee_base
         return T_ee_world[:3, -1] 
     
+    def forward_kinematics_full(self, config):
+        """Compute end-effector position in WORLD frame"""
+        M = np.array([[1, 0, 0, 0.033],
+                      [0, 1, 0, 0],
+                      [0, 0, 1, 0.6546],
+                      [0, 0, 0, 1]])
+        B_list_arm = np.array([[0 , 0 , 0 , 0 , 0],
+                               [0 ,-1 ,-1 ,-1 ,-1],
+                               [1 , 0 , 0 , 0 , 1],
+                               [0 ,-0.5076 ,-0.3526 ,-0.2176 , 0],
+                               [0.033 , 0 , 0 , 0 , 0],
+                               [0 , 0 , 0 , 0 , 0]])
+
+        T_ee_base = mr.FKinBody(M, B_list_arm, np.array(config))
+        T_base_world = self.get_base_transform()
+        T_ee_world = T_base_world @ T_ee_base
+        return T_ee_world
+    
     def check_collision(self, config):
         """
         Check if a given joint configuration is collision-free.
@@ -197,6 +215,10 @@ class PlannerManipulator:
             return self.Node(self.goal.q_values.copy())
     
     def get_nearest_node_index(self, rnd_node):
+        # return np.argmin([
+        #     self.pose_distance(n.q_values, rnd_node.q_values)
+        #     for n in self.node_list
+        # ])
         dlist = [np.linalg.norm(np.array(node.q_values) - np.array(rnd_node.q_values))
                  for node in self.node_list]
         return dlist.index(min(dlist))
@@ -232,6 +254,32 @@ class PlannerManipulator:
             [0, 0, 1, z],
             [0, 0, 0, 1]
         ])
+
+    def pose_distance(self, q1_values, q2_values):
+        """Compare closeness based on end-effector pose"""
+        p1 = self.forward_kinematics(q1_values)  # Pose of node q1
+        p2 = self.forward_kinematics(q2_values)  # Pose of node q2
+        
+        # Position difference
+        position_diff = np.linalg.norm(p1 - p2)
+        
+        # Orientation difference (using Frobenius norm)
+        # orientation_diff = np.linalg.norm(R1 - R2)
+        
+        # Weighted combination (adjust weights based on task)
+        return position_diff #+ 0.5 * orientation_diff
+    
+    def calc_dist_to_goal(self, current_q):
+        """Calculate distance to goal in joint configuration space"""
+        q_diff = np.array(current_q) - np.array(self.goal.q_values)
+        return np.linalg.norm(q_diff)
+    
+    def is_goal_reached(self, node):
+        """Check if node satisfies both position and orientation constraints"""
+        current_pose = self.forward_kinematics_full(node.q_values)
+        pos_error = np.linalg.norm(current_pose[:3, -1] - self.goal[:3, -1])
+        orient_error = np.linalg.norm(current_pose[:3, :3] - self.goal[:3, :3])
+        return pos_error < 0.01 and orient_error < 0.1
     
     def generate_final_course(self, goal_ind):
         path = []
@@ -242,11 +290,6 @@ class PlannerManipulator:
         path.append(node.q_values)
         # print(path[::-1])
         return path[::-1]
-    
-    def calc_dist_to_goal(self, current_q):
-        """Calculate distance to goal in joint configuration space"""
-        q_diff = np.array(current_q) - np.array(self.goal.q_values)
-        return np.linalg.norm(q_diff)
     
     @staticmethod
     def normalize_joint_angles(joint_angles):
@@ -271,7 +314,7 @@ class PlannerManipulator:
         ee_positions = []
         for config in path:
             position = self.forward_kinematics(config)
-            ee_positions.append(position.tolist())
+            ee_positions.append(position.tolist()) #.tolist()
         return ee_positions
     
 class RRT(PlannerManipulator):
@@ -299,12 +342,13 @@ class RRT(PlannerManipulator):
                 
                 # Check if goal is reached
                 if np.linalg.norm(np.array(new_node.q_values) - np.array(self.goal.q_values)) <= self.path_resolution:
-                    # print("Goal reached. Terminating early.")
+                # if self.is_goal_reached(new_node):
                     return self.generate_final_course(len(self.node_list) - 1)  # Exit immediately
 
         # Final check after loop
         last_node = self.node_list[-1]
         if np.linalg.norm(np.array(last_node.q_values) - np.array(self.goal.q_values)) <= self.expand_dis:
+        # if self.is_goal_reached(last_node):
             return self.generate_final_course(len(self.node_list) - 1)
         
         return []
@@ -313,11 +357,11 @@ class RRTStar(PlannerManipulator):
     """RRT* implementation with cost optimization"""
     def __init__(self, sim, obstacles=None):
         super().__init__(sim, obstacles)
-        self.expand_dis=0.5
-        self.path_resolution=0.1
-        self.goal_sample_rate=30
-        self.max_iter=100
-        self.connect_circle_dist=0.3
+        self.expand_dis=0.1
+        self.path_resolution=0.01
+        self.goal_sample_rate=15
+        self.max_iter=1000
+        self.connect_circle_dist=0.05
         self.robot_radius=0.0
         # self.search_until_max_iter = True
         

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class OccupancyGrid:
-    def __init__(self, sim, cell_size=0.5):
+    def __init__(self, sim, cell_size=0.1):
         self.sim = sim
         self.cell_size = cell_size
         self.grid = None
@@ -110,7 +110,6 @@ class OccupancyGrid:
                 max_x = self.sim.getObjectFloatParam(obstacle, self.sim.objfloatparam_objbbox_max_x)
                 min_y = self.sim.getObjectFloatParam(obstacle, self.sim.objfloatparam_objbbox_min_y)
                 max_y = self.sim.getObjectFloatParam(obstacle, self.sim.objfloatparam_objbbox_max_y)
-                
                 # Adjust bounds based on position
                 min_x += position[0]
                 max_x += position[0]

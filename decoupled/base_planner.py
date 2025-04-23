@@ -61,8 +61,8 @@ class AStar:
         return base_waypoints
 
     def astar(self, start, goal):
-        print("Start Position:", start)
-        print("Goal Position:", goal)
+        # print("Start Position:", start)
+        # print("Goal Position:", goal)
 
         path = []
         fringe = PriorityQueue()
