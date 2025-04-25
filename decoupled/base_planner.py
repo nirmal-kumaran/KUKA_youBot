@@ -13,7 +13,7 @@ class AStar:
     def get_neighbors(maze, node):
         x, y = node
         neighbors = []
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
             nx, ny = x + dx, y + dy
             if 0 <= nx < maze.shape[0] and 0 <= ny < maze.shape[1] and maze[nx, ny] != 1:
                 neighbors.append((nx, ny))

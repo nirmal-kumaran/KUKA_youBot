@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class OccupancyGrid:
-    def __init__(self, sim, cell_size=0.1):
+    def __init__(self, sim, cell_size=0.05, inflation_size=0.5):
         self.sim = sim
         self.cell_size = cell_size
+        self.inflation_size = inflation_size
         self.grid = None
         self.map_dims = self._get_floor_dimensions()
         self.grid_width = int((self.map_dims[1] - self.map_dims[0]) / cell_size)
@@ -37,29 +38,6 @@ class OccupancyGrid:
                 print(f"Warning: Obstacle '{name}' not found.")
         return obstacles
 
-    # def _get_obstacles(self):
-    #     """Retrieve handles for all obstacles in the scene."""
-    #     obstacles = []
-    #     i = 0
-    #     while True:
-    #         obstacle_name = f'/Obstacles/Cylinder[{i}]' # Iterate through all obstacles
-    #         obstacle_handle = self.sim.getObject(obstacle_name)
-    #         if obstacle_handle != -1:
-    #             obstacles.append(obstacle_handle)
-    #             i += 1 # next obstacle
-    #         else:
-    #             break # stop
-    #         i=0
-    #     while True:
-    #         obstacle_name = f'/Obstacles/Wall[{i}]' # Iterate through all obstacles
-    #         obstacle_handle = self.sim.getObject(obstacle_name)
-    #         if obstacle_handle != -1:
-    #             obstacles.append(obstacle_handle)
-    #             i += 1 # next obstacle
-    #         else:
-    #             break # stop
-    #     return obstacles #list of all cylinders
-
     def _get_special_objects(self):
         """Retrieve handles for special objects like youBot, Cuboid_initial, and Cuboid_goal."""
         special_objects = {}
@@ -75,6 +53,17 @@ class OccupancyGrid:
 
     def _mark_obstacle(self, min_x, max_x, min_y, max_y):
         """Mark cells occupied."""
+        min_x -= self.inflation_size/2
+        max_x += self.inflation_size/2
+        min_y -= self.inflation_size/2
+        max_y += self.inflation_size/2
+        
+        # Clamp to grid boundaries
+        min_x = max(min_x, self.map_dims[0])
+        max_x = min(max_x, self.map_dims[1])
+        min_y = max(min_y, self.map_dims[2])
+        max_y = min(max_y, self.map_dims[3])
+
         for i in range(self.grid_height):
             for j in range(self.grid_width):
                 # Calculate cell center coordinates
