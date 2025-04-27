@@ -26,6 +26,7 @@ class SimulationManager:
             goal = occupancy_grid.goal_position
             
             astar = AStar(maze, occupancy_grid.map_dims, occupancy_grid.cell_size, heuristic=1)
+
             start_payload_theta, start_payload = astar.astar_trajectory(start, payload)
             payload_goal_theta, payload_goal = astar.astar_trajectory(payload, goal)
 
@@ -35,7 +36,7 @@ class SimulationManager:
             print("Base path waypoints:", base_path_theta)
             controller = YouBotController(sim_manager.sim)
             controller.follow_path(base_path_theta)
-
+            controller.set_arm_position_youbot(0)
 
     #         # Compute manipulator trajectory using InformedRRTStar
     #         manipulator = InformedRRTStar(self.sim)

@@ -40,6 +40,8 @@ class AStar:
         Returns:
             List of waypoints with orientation [(x1, y1, theta1), (x2, y2, theta2), ...].
         """
+
+        print(f"path - {astar_path}")
         base_waypoints = []
         for i in range(len(astar_path) - 1):
             # Current and next waypoints
@@ -55,6 +57,8 @@ class AStar:
             theta = (angle_rad + math.pi) % (2 * math.pi) - math.pi
             # Append current waypoint with theta
             base_waypoints.append((x_current, y_current, theta))
+
+        print(base_waypoints)
         
         # Handle last waypoint (same theta as previous or task-defined)
         base_waypoints.append((astar_path[-1][0], astar_path[-1][1], base_waypoints[-1][2]))

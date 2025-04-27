@@ -16,7 +16,16 @@ class YouBotController:
             '/rollingJoint_rl', '/rollingJoint_rr'
         ]
         self.wheel_handles = [sim.getObject(joint) for joint in self.wheel_joints]
+        
+        # Get arm joint handles (not used in path following)
+        self.arm_joints = [
+            '/youBotArmJoint0', '/youBotArmJoint1', 
+            '/youBotArmJoint2', '/youBotArmJoint3', 
+            '/youBotArmJoint4'
+        ]
 
+        self.arm_handles = [sim.getObject(joint) for joint in self.arm_joints]
+        
         self.stop()
 
         self.youbot_max_W = 0.2 #[rad/seconds] Maximum angular velocity (omega) of youbot
@@ -39,6 +48,34 @@ class YouBotController:
     #     yaw = self.normalize_angle(angles[2]) # Angle b/w robot's head and global x
 
     #     return [position[0], position[1], yaw]
+
+    def set_arm_position_youbot(self, list):
+        # Motion limits in deg/sec, then converted to rad/sec
+        vel = 180
+        accel = 40
+        jerk = 80
+
+        max_vel = [float(np.deg2rad(vel))] * 5
+        max_accel = [float(np.deg2rad(accel))] * 5
+        max_jerk = [float(np.deg2rad(jerk))] * 5
+
+        # Get only 5 arm joint handles
+        handles = self.arm_handles[:5]
+
+        angles = [[0.00016827562038024269, 0.5435698870030836, 0.9175151824094341, 1.2705860225917798, -8.667589826005795e-05], [-0.2416629679792381, 0.5781678871079382, 0.6780731389862094, 1.0005658648209526, -0.24519328585918015], [-0.6870686414352338, 0.3955825872635978, 0.668461621839978, 1.0757342452472762, -0.3571474177891562], [-1.073065399032333, 0.5390415589086736, 0.5697368121824226, 1.3339876242726598, -0.2940234860428298], [-1.4204106175632962, 0.7473364482813235, 0.7697463869561888, 1.2261020513194152, -0.47928387407081635], [-1.758065783893215, 0.8554996762232587, 0.6201856902333708, 1.526465157936968, -0.3711020505017243], [-2.0957209502231335, 0.9636629041651935, 0.47062499351055276, 1.8268282645545206, -0.26292022693263223], [-2.433376116553051, 1.0718261321071287, 0.32106429678773474, 2.1271913711720725, -0.15473840336354017], [-2.771031282882971, 1.179989360049064, 0.171503600064917, 2.427554477789624, -0.04655657979444816]]
+        for pos_deg in angles:
+            # Convert to radians and ensure Python float type
+            target_rad = pos_deg
+
+            self.sim.moveToConfig({
+                'joints': handles,
+                'targetPos': target_rad,
+                'maxVel': max_vel,
+                'maxAccel': max_accel,
+                'maxJerk': max_jerk
+            })
+
+        print("Finished all arm motions.")
 
     def get_robot_pose(self):
         """
@@ -251,5 +288,3 @@ class YouBotController:
     
     # def normalize_angle(angle):
     #     return np.arctan2(np.sin(angle), np.cos(angle))
-
-
