@@ -51,8 +51,8 @@ class YouBotController:
 
     def set_arm_position_youbot(self, list):
         # Motion limits in deg/sec, then converted to rad/sec
-        vel = 180
-        accel = 40
+        vel = 3000
+        accel = 1000
         jerk = 80
 
         max_vel = [float(np.deg2rad(vel))] * 5
@@ -62,7 +62,8 @@ class YouBotController:
         # Get only 5 arm joint handles
         handles = self.arm_handles[:5]
 
-        angles = [[0.00016827562038024269, 0.5435698870030836, 0.9175151824094341, 1.2705860225917798, -8.667589826005795e-05], [-0.2416629679792381, 0.5781678871079382, 0.6780731389862094, 1.0005658648209526, -0.24519328585918015], [-0.6870686414352338, 0.3955825872635978, 0.668461621839978, 1.0757342452472762, -0.3571474177891562], [-1.073065399032333, 0.5390415589086736, 0.5697368121824226, 1.3339876242726598, -0.2940234860428298], [-1.4204106175632962, 0.7473364482813235, 0.7697463869561888, 1.2261020513194152, -0.47928387407081635], [-1.758065783893215, 0.8554996762232587, 0.6201856902333708, 1.526465157936968, -0.3711020505017243], [-2.0957209502231335, 0.9636629041651935, 0.47062499351055276, 1.8268282645545206, -0.26292022693263223], [-2.433376116553051, 1.0718261321071287, 0.32106429678773474, 2.1271913711720725, -0.15473840336354017], [-2.771031282882971, 1.179989360049064, 0.171503600064917, 2.427554477789624, -0.04655657979444816]]
+        # angles = [[0.00016827562038024269, 0.5435698870030836, 0.9175151824094341, 1.2705860225917798, -8.667589826005795e-05], [-0.2416629679792381, 0.5781678871079382, 0.6780731389862094, 1.0005658648209526, -0.24519328585918015], [-0.6870686414352338, 0.3955825872635978, 0.668461621839978, 1.0757342452472762, -0.3571474177891562], [-1.073065399032333, 0.5390415589086736, 0.5697368121824226, 1.3339876242726598, -0.2940234860428298], [-1.4204106175632962, 0.7473364482813235, 0.7697463869561888, 1.2261020513194152, -0.47928387407081635], [-1.758065783893215, 0.8554996762232587, 0.6201856902333708, 1.526465157936968, -0.3711020505017243], [-2.0957209502231335, 0.9636629041651935, 0.47062499351055276, 1.8268282645545206, -0.26292022693263223], [-2.433376116553051, 1.0718261321071287, 0.32106429678773474, 2.1271913711720725, -0.15473840336354017], [-2.771031282882971, 1.179989360049064, 0.171503600064917, 2.427554477789624, -0.04655657979444816]]
+        angles = list
         for pos_deg in angles:
             # Convert to radians and ensure Python float type
             target_rad = pos_deg
@@ -128,9 +129,11 @@ class YouBotController:
 
         return [v_fl, v_fr, v_rl, v_rr]
 
-    def follow_path(self, path, pos_threshold=0.05, orient_threshold=0.1):
+    def follow_path(self, path, mani_path, pos_threshold=0.05, orient_threshold=0.1):
         
         path = path[1:]
+        mani_path = mani_path
+
         # print(path)
         # self.get_robot_pose()
         # path = [(2.25011, -2.17, 1.57)]
@@ -154,8 +157,44 @@ class YouBotController:
                     waypoint_reached = True
                     self.stop()
                     print(f"Waypoint {i+1} reached!")
+                
 
+                # euclidean distance b/w obstacle and robot < 0.01
+                # start planning to block position
+                # and pick up the block and return to the original position
+
+                # final goal pos keep the block and then move again
+            self.set_arm_position_youbot(mani_path)
         print("Path following complete!")
+
+    # def follow_path(self, path, pos_threshold=0.05, orient_threshold=0.1):
+        
+    #     path = path[1:]
+    #     # print(path)
+    #     # self.get_robot_pose()
+    #     # path = [(2.25011, -2.17, 1.57)]
+    #         # print("robot_stopped")
+    #         # self.stop()
+
+    #     for i, waypoint in enumerate(path):
+    #         target_x, target_y, target_theta = waypoint
+
+    #         print(f"Moving to waypoint {i+1}/{len(path)}: [{target_x:.2f}, {target_y:.2f}, {target_theta:.2f}]")
+            
+    #         waypoint_reached = False
+    #         start_time = time.time()
+    #         timeout = 30  # Timeout to prevent infinite loops
+
+    #         while not waypoint_reached: # and (time.time() - start_time) < timeout
+
+    #             self.gtg(waypoint)
+
+    #             if self.at_goal(waypoint):
+    #                 waypoint_reached = True
+    #                 self.stop()
+    #                 print(f"Waypoint {i+1} reached!")
+
+    #     print("Path following complete!")
 
     def stop(self):
             """Stop the robot."""
