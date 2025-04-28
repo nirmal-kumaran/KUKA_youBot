@@ -36,7 +36,7 @@ class SimulationManager:
             print("Base path waypoints:", base_path_theta)
             controller = YouBotController(sim_manager.sim)
             controller.follow_path(base_path_theta)
-            controller.set_arm_position_youbot(0)
+            controller.set_arm_position_youbot([0,0, 0,0,0])
 
     #         # Compute manipulator trajectory using InformedRRTStar
     #         manipulator = InformedRRTStar(self.sim)
