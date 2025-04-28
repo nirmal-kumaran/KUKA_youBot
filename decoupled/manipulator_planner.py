@@ -40,23 +40,21 @@ class RRTBase:
         ])
         
         # Define screw axes in body frame for arm
-        self.B_list_arm = np.array([
-            [0, 0, 0, 0, 0],
-            [0, -1, -1, -1, 0],
-            [1, 0, 0, 0, 1],
-            [0, -0.5076, -0.3526, -0.2176, 0],
-            [0.033, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0]
-        ])
+        self.B_list_arm = np.array([[0,0,0,0,0],
+                        [0,-1,-1,-1,0],
+                        [1,0,0,0,1],
+                        [0,-0.5076,-0.3526,-0.2176,0],
+                        [0.033,0,0,0,0],
+                        [0,0,0,0,0]])
     
     def get_obstacles_from_simulation(self):
         """Retrieve obstacle positions and dimensions from the simulation."""
         try:
             obstacle_handles = self.sim.getObject('/Obstacles')
-            num_children = self.sim.getObjectChildCount(obstacle_handles)
+            # num_children = self.sim.getObjectChildCount(obstacle_handles)
             obstacles = []
             
-            for i in range(num_children):
+            for i in range(7):
                 child_handle = self.sim.getObjectChild(obstacle_handles, i)
                 pos = self.sim.getObjectPosition(child_handle, -1)
                 dims = self.sim.getObjectBoundingBox(child_handle)
@@ -557,69 +555,8 @@ class InformedRRT(RRTBase):
                 return False
         return True
 
-
-# Example usage:
-def main():
-    # Placeholder for simulation object - in real use you'd have your CoppeliaSim interface
-    class SimPlaceholder:
-        def getObject(self, name):
-            return 0  # Placeholder
-        
-        def getObjectChildCount(self, handle):
-            return 0  # Placeholder
-        
-        def getObjectChild(self, handle, index):
-            return 0  # Placeholder
-        
-        def getObjectPosition(self, handle, frame):
-            return [0, 0, 0]  # Placeholder
-        
-        def getObjectBoundingBox(self, handle):
-            return [0.1, 0.1, 0.1]  # Placeholder
-        
-        def getJointPosition(self, handle):
-            return 0.0  # Placeholder
-    
-    sim = SimPlaceholder()
-    
-    # Create some obstacles for testing
-    obstacles = [
-        {'position': [0.5, 0.0, 0.2], 'dimensions': [0.1, 0.1, 0.2]},
-        {'position': [0.0, 0.5, 0.2], 'dimensions': [0.1, 0.1, 0.2]},
-        {'position': [-0.3, -0.3, 0.1], 'dimensions': [0.2, 0.2, 0.2]}
-    ]
-    
-    # Create RRT and Informed RRT planners
-    rrt_planner = RRT(sim, obstacles=obstacles)
-    informed_rrt_planner = InformedRRT(sim, obstacles=obstacles)
-    
-    # Define start and goal configurations
-    start_config = [0.0, 0.0, 0.0, 0.0, 0.0]
-    goal_config = [1.0, 0.5, -0.5, 0.8, 0.2]
-    
-    # Plan paths
-    try:
-        print("Planning with standard RRT...")
-        rrt_path = rrt_planner.plan(start_config, goal_config)
-        rrt_planner.visualize_trajectory(rrt_path, "RRT Path")
-        
-        print("\nPlanning with Informed RRT*...")
-        informed_path = informed_rrt_planner.plan(start_config, goal_config)
-        informed_rrt_planner.visualize_trajectory(informed_path, "Informed RRT* Path")
-        
-        # Compare path lengths
-        rrt_length = sum(np.linalg.norm(rrt_path[i+1] - rrt_path[i]) for i in range(len(rrt_path)-1))
-        informed_length = sum(np.linalg.norm(informed_path[i+1] - informed_path[i]) for i in range(len(informed_path)-1))
-        
-        print(f"\nRRT path length: {rrt_length:.4f}")
-        print(f"Informed RRT* path length: {informed_length:.4f}")
-        print(f"Improvement: {(1 - informed_length/rrt_length)*100:.2f}%")
-        
-    except Exception as e:
-        print(f"Planning failed: {e}")
-
 if __name__ == "__main__":
-    main()
+    print("This is just an Occupancy Grid class implementation. It cannot be run independently.")
 
 
 # import numpy as np

@@ -248,6 +248,8 @@ class PlannerManipulator:
     def get_base_transform(self):
         """Compute base's transformation matrix in world frame"""
         x, y, z = self.base_position
+        # print(x,y,z)
+        # print(self.base_orientation)
         return np.array([
             [np.cos(self.base_orientation), -np.sin(self.base_orientation), 0, x],
             [np.sin(self.base_orientation), np.cos(self.base_orientation), 0, y],
@@ -358,10 +360,10 @@ class RRTStar(PlannerManipulator):
     def __init__(self, sim, obstacles=None):
         super().__init__(sim, obstacles)
         self.expand_dis=0.1
-        self.path_resolution=0.01
+        self.path_resolution=0.1
         self.goal_sample_rate=15
-        self.max_iter=1000
-        self.connect_circle_dist=0.05
+        self.max_iter=500
+        self.connect_circle_dist=0.2
         self.robot_radius=0.0
         # self.search_until_max_iter = True
         

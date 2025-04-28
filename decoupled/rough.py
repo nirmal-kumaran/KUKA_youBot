@@ -49,10 +49,10 @@ def normalize_joint_angles(joint_angles):
     return [(angle + np.pi) % (2 * np.pi) - np.pi for angle in joint_angles]
 
 
-ik = inverse_kinematics(np.array([[1, 0, 0, 0.033],
-                    [0, 1, 0, 0.1],
-                    [0, 0, 1, 0.8],
-                    [0, 0, 0, 1]]))
+ik = inverse_kinematics(np.array([[ 7.07106781e-01,  1.22464680e-16, -7.07106781e-01,  1.99636419e-01],
+ [ 8.65956056e-17, -1.00000000e+00, -8.65956056e-17, -7.69665771e-02],
+ [-7.07106781e-01,  0.00000000e+00, -7.07106781e-01,  7.92191929e-02],
+ [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]))
 print(ik)
 
 
@@ -60,7 +60,7 @@ print(ik)
 # Example usage
 original_angles = [7.534508202457563, -8.844009968710582, 18.174803767379615, -9.330793798669033, -7.534508202457564]
 normalized_angles = normalize_joint_angles(original_angles)
-print(normalized_angles)
+# print(normalized_angles)
 # Define inputs
 B_list_arm = np.array([
     [0, 0, 0, 0, 0],
@@ -81,5 +81,5 @@ thetalist = np.array(normalized_angles)
 # Compute Forward Kinematics
 T_ee = mr.FKinBody(M, B_list_arm, thetalist)
 
-print("Computed End-Effector Pose:")
-print(T_ee)
+# print("Computed End-Effector Pose:")
+# print(T_ee)

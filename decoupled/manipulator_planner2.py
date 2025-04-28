@@ -16,8 +16,8 @@ class RRT:
 
     def __init__(self, sim, obstacles=None):
         
-        self.goal_sample_rate = 15
-        self.path_resolution = 0.5
+        self.goal_sample_rate = 10
+        self.path_resolution = 0.1
         self.max_iter = 500
         self.expand_dis = 0.5
         self.sim = sim
@@ -311,10 +311,6 @@ class RRT:
 
         new_node.parent = from_node
         return new_node
-
-    # def check_collision(self, node):
-    #     """Placeholder for collision checking - always returns True"""
-    #     return True
 
     def generate_final_course(self, goal_ind):
         path = []

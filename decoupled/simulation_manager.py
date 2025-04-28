@@ -87,14 +87,15 @@ class SimulationManager:
 
             ### Manipulator Planner
             if start_payload_theta:
-                standoff_waypoint = np.array(start_payload_theta[-2])
-                print("Standoff waypoint:", standoff_waypoint)
+                print(start_payload_theta)
+
+                standoff_waypoint = np.array(start_payload_theta[-3])
+                # print("Standoff waypoint:", standoff_waypoint)
 
                 cube_payload_handle = self.sim.getObject('/Cuboid_initial')
                 cube_payload_position = np.array(self.sim.getObjectPosition(cube_payload_handle, -1))
                 cube_payload_orientation = self.sim.getObjectOrientation(cube_payload_handle, -1)
                 R = self.euler_to_rotation_matrix(cube_payload_orientation)
-
 
                 print("Payload position:", cube_payload_position)
 
@@ -107,7 +108,7 @@ class SimulationManager:
                 print(f"Generated {len(points)} points along the line.")
 
                 print("Planning manipulator path")
-                manipulator_planner = RRT(self.sim)
+                manipulator_planner = RRTStar(self.sim)
                 current_arm_config = self.get_current_arm_config()
 
                 # R = np.array([
@@ -132,45 +133,48 @@ class SimulationManager:
                     [0, 0, 0, 1]
                 ])
                 
-                waypoint1 = Tsc_i @ Tce_s
+                waypoint_1 = Tsc_i @ Tce_s
 
                 # print(Tsc_i)
                 # print(Tce_s)
                 # print(waypoint1)
 
+                # standoff_waypoint_base = np.array(start_payload_theta[-12:-2])
+
                 for i, point in enumerate(points):
                     print(f"Testing point {i+1}/{len(points)}: {point}")
 
-                    # Compute orientation facing the payload
+                    # # Compute orientation facing the payload
                     dx, dy = cube_payload_position[0] - point[0], cube_payload_position[1] - point[1]
                     theta = np.arctan2(dy, dx)
 
                     # Try IK with current base position
                     goal_config = manipulator_planner.inverse_kinematics(
-                        waypoint1,
-                        base_position=(point[0], point[1], point[2]),  # Use z from constant value
+                        waypoint_1,
+                        base_position=(point[0], point[1], 0.0963),  # Use z from constant value
                         base_orientation=theta
                     )
 
                     if goal_config and len(goal_config) > 0:
                         print(f"IK angles: {goal_config}")
-                        print(f"✅ Feasible IK solution found at point {point} with orientation {theta:.2f} radians.")
+                        print(f"✅ Feasible IK solution found at point {point}.")
 
                         # Plan arm trajectory to the feasible configuration
                         start_time = time.time()
                         path = manipulator_planner.planning(current_arm_config, goal_config)
                         elapsed_time = time.time() - start_time
                         if path:
+                            # print(path)
                             ee_positions = manipulator_planner.get_ee_positions(path)
                             self.visualize_manipulatorpath_in_sim(ee_positions)
-                            print(f"Successfully planned trajectory with {path} points, {elapsed_time} sec.")
+                            print(f"Successfully planned trajectory with {len(path)} points, {elapsed_time} sec.")
                             
-                            # Run timing tests with ACTUAL configurations
-                            self.run_timing_tests(
-                                manipulator_planner,
-                                start_config=[0.00, 0.64, 0.99, 1.32, 0.00],
-                                goal_config=[0.14, -1.56, 0.50, -2.87, 3.14]
-                            )
+                            # # Run timing tests with ACTUAL configurations
+                            # self.run_timing_tests(
+                            #     manipulator_planner,
+                            #     start_config=[0.00, 0.64, 0.99, 1.32, 0.00],
+                            #     goal_config=[0.14, -1.56, 0.50, -2.87, 3.14]
+                            # )
                             break
                         else:
                             print("Arm path planning failed.")
@@ -340,6 +344,7 @@ class SimulationManager:
 
     def visualize_manipulatorpath_in_sim(self, ee_positions):
         """Visualize manipulator path without clearing base drawings"""
+        print(ee_positions)
         for handle in self.manipulator_drawing_handles:
             self.sim.removeDrawingObject(handle)
         self.manipulator_drawing_handles = []

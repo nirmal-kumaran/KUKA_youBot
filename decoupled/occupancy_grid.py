@@ -164,12 +164,12 @@ class OccupancyGrid:
             path_y = [(self.grid_height - i - 0.5) * self.cell_size for (i, j) in path]
             ax.plot(path_x, path_y, 'y-', linewidth=2, label='A* Path')  # Yellow line for A* path
 
-        # Plot B-spline smoothed path if provided
-        if b_spline_path:
-            # Convert grid indices to plot coordinates (cell centers)
-            spline_x = [(j + 0.5) * self.cell_size for (i, j) in b_spline_path]
-            spline_y = [(self.grid_height - i - 0.5) * self.cell_size for (i, j) in b_spline_path]
-            ax.plot(spline_x, spline_y, 'c-', linewidth=2.5, label='B-Spline Smoothed Path')  # Cyan line for smoothed path
+        # # Plot B-spline smoothed path if provided
+        # if b_spline_path:
+        #     # Convert grid indices to plot coordinates (cell centers)
+        #     spline_x = [(j + 0.5) * self.cell_size for (i, j) in b_spline_path]
+        #     spline_y = [(self.grid_height - i - 0.5) * self.cell_size for (i, j) in b_spline_path]
+        #     ax.plot(spline_x, spline_y, 'c-', linewidth=2.5, label='B-Spline Smoothed Path')  # Cyan line for smoothed path
 
         # Mark special objects with different colors
         if 'youBot' in self.special_objects and self.special_objects['youBot'] != -1:
