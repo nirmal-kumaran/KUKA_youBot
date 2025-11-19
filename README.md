@@ -1,29 +1,3 @@
-# குகா யூபாட் 
-நகரக்கூடியது கையாளுதல் ah ஓட வைக்கிறோம் :) 
-
-ED5125(Spr'25) திட்டத்திற்கான களஞ்சியம். இந்த திட்டம் வடமேற்கின் ME 449 கேப்ஸ்டோன் திட்டத்தை அடிப்படையாகக் கொண்டது. முழு திட்ட விளக்கத்தை காணலாம் [இங்கே](https://hades.mech.northwestern.edu/index.php/Mobile_Manipulation_Capstone_2023). 
-
-## கண்ணோட்டம் 
-1. இந்த களஞ்சியத்தில் CoppeliaSim இல் Kuka youBot மொபைல் கையாளுநர் (நான்கு மெகனம் சக்கரங்கள் மற்றும் 5R ரோபோ கை கொண்ட மொபைல் தளம்) பயன்படுத்தி பிக்-அண்ட்-பிளேஸ் பணியை உருவகப்படுத்துவதற்கான குறியீடு உள்ளது.
-2. நிலையான தடைகள் சுவர் மற்றும் பழமையான வடிவங்களை உள்ளடக்கியது
-3. பின்னூட்டக் கட்டுப்பாட்டாளர்
-4. இயக்க திட்டமிடல்
-
-## தொகுப்பு விளக்கம் 
-இந்த திட்டம் occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager என தொகுக்கப்பட்டுள்ளது: 
-
-## அமைப்பு 
-1. உங்கள் VENV இல் ZMQ API ஐ நிறுவ இந்த கட்டளையை இயக்கவும்- `pip install coppeliasim-zmqremoteapi-client`
-2. simulation_manager.py இயக்கவும்
-
-## முடிவுகள்
-1. யூக்ளிடிய ஹியூரிஸ்டிக் உடன் தளத்தின் ஒரு A* பாதை
-<img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
-
-<img src="https://github.com/user-attachments/assets/08be98e5-804d-4bc2-8a96-945d76604ccd" alt="Alt Text" style="width:50%; height:auto;">
-
-
-
 # Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
 
