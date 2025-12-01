@@ -22,3 +22,7 @@ This project is packaged into occupancy_grid, base_planner, manipulator_planner,
 
 <img src="https://github.com/user-attachments/assets/08be98e5-804d-4bc2-8a96-945d76604ccd" alt="Alt Text" style="width:50%; height:auto;">
 
+<img src="./scene/0.png" alt="Alt Text" style="width:50%; height:auto;">
+
+<img src="./scene/1.png" alt="Alt Text" style="width:50%; height:auto;">
+
