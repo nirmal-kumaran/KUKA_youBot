@@ -14,13 +14,14 @@ This project is packaged into occupancy_grid, base_planner, manipulator_planner,
 
 
 ## Results
-1. A* path of base with Euclidean heuristic
+1. A* path of base with Euclidean heuristic and Manipulator palnning RRT*
 <img src="https://github.com/user-attachments/assets/0155c41a-d8ee-491d-87b1-1ba31527687a" alt="Alt Text" style="width:50%; height:auto;">
 
 <img src="https://github.com/user-attachments/assets/08be98e5-804d-4bc2-8a96-945d76604ccd" alt="Alt Text" style="width:50%; height:auto;">
 
+<img src="./scene/0 (1).png" alt="Alt Text" style="width:50%; height:auto;">
+2. Coupled Planning (RRT)
 <img src="./scene/0.png" alt="Alt Text" style="width:50%; height:auto;">
 
-<img src="./scene/0 (1).png" alt="Alt Text" style="width:50%; height:auto;">
 
-<img src="./scene/0 (2).png" alt="Alt Text" style="width:50%; height:auto;">
+
