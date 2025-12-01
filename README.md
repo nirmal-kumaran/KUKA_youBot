@@ -12,9 +12,6 @@ This project is based on Kuka YouBot mobile Manipultor performing motion plannin
 ## Package Description
 This project is packaged into occupancy_grid, base_planner, manipulator_planner, controller, simulation_manager
 
-## Setup
-1. run this command to install zmq api in your venv- `pip install coppeliasim-zmqremoteapi-client`
-2. run simulation_manager.py
 
 ## Results
 1. A* path of base with Euclidean heuristic
