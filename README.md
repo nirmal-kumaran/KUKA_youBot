@@ -24,6 +24,6 @@ This project is packaged into occupancy_grid, base_planner, manipulator_planner,
 
 <img src="./scene/0.png" alt="Alt Text" style="width:50%; height:auto;">
 
-<img src="./scene/0(1).png" alt="Alt Text" style="width:50%; height:auto;">
+<img src="./scene/0 (1).png" alt="Alt Text" style="width:50%; height:auto;">
 
-<img src="./scene/0(2).png" alt="Alt Text" style="width:50%; height:auto;">
+<img src="./scene/0 (2).png" alt="Alt Text" style="width:50%; height:auto;">
