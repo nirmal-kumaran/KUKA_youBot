@@ -1,7 +1,7 @@
 # Kuka youBot <EN>
 Let's MoveIt Mobile Manipulator :)
 
-Repository for ED5125 project (Spr'25). This project is based on Kuka YouBot mobile Manipultor performing motion planning.
+This project is based on Kuka YouBot mobile Manipultor performing motion planning.
 
 ## Overview
 1. This repository contains code to simulate a pick-and-place task using a Kuka youBot mobile manipulator (a mobile base with four mecanum wheels and a 5R robot arm) in CoppeliaSim. 
